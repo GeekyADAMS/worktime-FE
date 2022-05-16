@@ -41,7 +41,7 @@ export const useWorkLogStore = defineStore({
     setAllWorkRecord(records: []) {
       this.allWorkRecords = records || [];
 
-      console.log(records);
+      // console.log("Heyyyyy", records);
     },
     resetWordRecord() {
       this.workRecord = {
@@ -55,7 +55,9 @@ export const useWorkLogStore = defineStore({
     async getAllWorkRecords() {
       const { record } = await fetchUserWorkLogs();
 
-      this.setAllWorkRecord(record);
+      if (record) {
+        this.setAllWorkRecord(record);
+      }
     },
     removeWorkRecord(index) {
       this.allWorkRecords.splice(index, 1);

@@ -16,10 +16,11 @@ axios.interceptors.request.use(
       config.headers = {};
     }
 
-    config.headers["Authorization"] = `Bearer ${parse(
-      import.meta.env.VITE_DEV_API_TOKEN,
-      "default"
-    )}`;
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
 
     return config;
   },

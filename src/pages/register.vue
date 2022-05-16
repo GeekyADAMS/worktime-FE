@@ -60,9 +60,10 @@
         <a-space class="mt-6 mb-2" style="width: 100%">
           <a-button
             class="flex flex-row items-center justify-center w-full px-6 py-3 text-white rounded-md clickable-2 bg-deep-purple space-between"
-            :class="{ disabled: false }"
+            :class="{ disabled: !isFormComplete || isRegistering }"
             type="primary"
-            :loading="false"
+            :loading="isRegistering"
+            @click="register"
           >
             <span class="font-bold" :class="{ 'ml-3': false }"
               >Create account</span
@@ -82,10 +83,7 @@
 
         <div class="inline text-sm">
           Forgot password?
-          <span
-            class="ml-2 font-medium text-orange-500 cursor-pointer"
-            @click="$router.push('/login')"
-          >
+          <span class="ml-2 font-medium text-orange-500 cursor-pointer">
             Reset password here</span
           >
         </div>
@@ -95,14 +93,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref, reactive, watch } from "vue";
 import AppLogo from "../components/icons/AppLogo.vue";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons-vue";
+
+import { registerUser } from "../utils/httpsRequest/auth";
+
+import { validateEmail } from "../utils/helpers/validation";
 
 export default defineComponent({
   components: { AppLogo, EyeOutlined, EyeInvisibleOutlined },
 
   name: "CreateAccount",
+
+  methods: {
+    async register() {
+      this.isRegistering = true;
+      const isErr = await registerUser(this.userDetails);
+
+      if (!isErr) {
+        this.$router.push("/login");
+      }
+      this.isRegistering = false;
+    },
+  },
 
   setup() {
     const userDetails = reactive({
@@ -114,6 +128,8 @@ export default defineComponent({
 
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
+    const isRegistering = ref(false);
+    const isFormComplete = ref(false);
 
     const togglePassVisibility = (type: string) => {
       if (type === "password") {
@@ -123,11 +139,29 @@ export default defineComponent({
       }
     };
 
+    watch(
+      () => ({ ...userDetails }),
+      (newVal) => {
+        if (
+          validateEmail(userDetails.email) &&
+          userDetails.password.length > 6 &&
+          userDetails.confirmPassword === userDetails.password &&
+          userDetails.username.length > 2
+        ) {
+          isFormComplete.value = true;
+        } else {
+          isFormComplete.value = false;
+        }
+      }
+    );
+
     return {
       userDetails,
       showPassword,
       showConfirmPassword,
       togglePassVisibility,
+      isRegistering,
+      isFormComplete,
     };
   },
 });

@@ -55,7 +55,7 @@ export const fetchUserWorkLogs = async () => {
 
     return { record, pageData };
   } catch (err: any) {
-    return err;
+    return { record: null, pageData: null };
   }
 };
 

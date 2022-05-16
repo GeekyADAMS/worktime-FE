@@ -11,7 +11,7 @@
       <form class="w-full mt-12" action="">
         <div class="mb-4">
           <label>Username or Email</label>
-          <a-input v-model:value="userDetails.userId" />
+          <a-input v-model:value="userDetails.identifier" />
         </div>
 
         <div class="mb-4">
@@ -80,20 +80,31 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons-vue";
 
 import { useUserProfileStore } from "../stores/userProfile";
 
+import { loginUser } from "../utils/httpsRequest/auth";
+
 export default defineComponent({
   components: { AppLogo, EyeOutlined, EyeInvisibleOutlined },
 
   name: "LoginPage",
 
   methods: {
-    ...mapActions(useUserProfileStore, ["setUserProfile", "getUserProfile"]),
+    ...mapActions(useUserProfileStore, ["getUserProfile"]),
 
     async login() {
       this.isLoadingUser = true;
 
-      const data = await this.getUserProfile(2);
+      const data = await loginUser(this.userDetails);
 
       if (data) {
+        localStorage.setItem("access_token", data.jwt);
+      } else {
+        this.isLoadingUser = false;
+        return;
+      }
+
+      const profile = await this.getUserProfile(data.user?.id);
+
+      if (profile) {
         this.$router.push("/");
       }
 
@@ -103,9 +114,8 @@ export default defineComponent({
 
   setup() {
     const userDetails = reactive({
-      userId: "",
+      identifier: "",
       password: "",
-      confirmPassword: "",
     });
 
     const showPassword = ref(false);

@@ -85,7 +85,7 @@ export default defineComponent({
       );
 
       if (!isErr) {
-        await this.getUserProfile(2);
+        await this.getUserProfile(this.profile["id"]);
         await this.getAllWorkRecords();
         this.closeModal();
       }
