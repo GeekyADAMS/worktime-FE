@@ -29,3 +29,18 @@ export const fetchUserProfile = async (id) => {
     return null;
   }
 };
+
+export const updateUserProfile = async (record, id: number) => {
+  try {
+    const { data } = await api.put(`/users/${id}`, record);
+
+    // console.log(data);
+    toast.success("User details: updated successfully");
+
+    return false;
+  } catch (err: any) {
+    toast.error(`Failed to update your profile details`);
+    toast.error(`${err?.message?.toLowerCase()}`);
+    return !!err;
+  }
+};

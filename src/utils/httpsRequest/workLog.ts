@@ -37,10 +37,10 @@ export const updateWorkLog = async (record, id: number) => {
   }
 };
 
-export const fetchUserWorkLogs = async () => {
+export const fetchUserWorkLogs = async (id) => {
   try {
     const { data } = await api.get(
-      "/work-logs?populate=users_permissions_user"
+      `/work-logs?populate=users_permissions_user&filters[users_permissions_user][id][$eq]=${id}`
     );
 
     const record: any[] = [];

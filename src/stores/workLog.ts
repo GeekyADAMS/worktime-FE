@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useUserProfileStore } from "../stores/userProfile";
+
 import {
   createWorkLog,
   fetchUserWorkLogs,
@@ -16,6 +18,7 @@ type Record = {
 
 export const useWorkLogStore = defineStore({
   id: "workLog",
+
   state: () => ({
     workRecord: {
       id: -1,
@@ -43,7 +46,7 @@ export const useWorkLogStore = defineStore({
 
       // console.log("Heyyyyy", records);
     },
-    resetWordRecord() {
+    resetWorkRecord() {
       this.workRecord = {
         id: -1,
         title: "",
@@ -53,7 +56,9 @@ export const useWorkLogStore = defineStore({
       };
     },
     async getAllWorkRecords() {
-      const { record } = await fetchUserWorkLogs();
+      const profile = useUserProfileStore();
+
+      const { record } = await fetchUserWorkLogs(profile.userProfile["id"]);
 
       if (record) {
         this.setAllWorkRecord(record);
@@ -63,7 +68,12 @@ export const useWorkLogStore = defineStore({
       this.allWorkRecords.splice(index, 1);
     },
     async addWorkRecord() {
-      const record: Record = { users_permissions_user: 2, ...this.workRecord };
+      const profile = useUserProfileStore();
+
+      const record: Record = {
+        users_permissions_user: profile.userProfile["id"],
+        ...this.workRecord,
+      };
       delete record.id;
 
       const response = await createWorkLog(record);

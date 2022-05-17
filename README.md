@@ -50,3 +50,5 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### DEMO: [View Project](https://worktime-toptal.vercel.app/)

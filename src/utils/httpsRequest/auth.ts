@@ -21,7 +21,7 @@ export const loginUser = async (details) => {
     const data = await api.post("/auth/local", details);
 
     toast.success(`Login successful`);
-    console.log("Login response: ", data.data);
+    // console.log("Login response: ", data.data);
 
     return data.data;
   } catch (err: any) {

@@ -4,7 +4,11 @@ import { fetchUserProfile } from "../utils/httpsRequest/user";
 export const useUserProfileStore = defineStore({
   id: "userProfile",
   state: () => ({
-    userProfile: {},
+    userProfile: {
+      role: {
+        name: "",
+      },
+    },
   }),
 
   persist: true,
@@ -16,6 +20,7 @@ export const useUserProfileStore = defineStore({
       const data = await fetchUserProfile(id);
 
       if (data) {
+        // console.log("User data: ", data);
         this.setUserProfile(data);
       }
 

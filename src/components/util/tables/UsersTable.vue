@@ -6,24 +6,21 @@
     :show-expand-column="true"
     :sticky="true"
     :row-class-name="
-      (record) =>
-        record.timeWorkedInHours < record.preferredWorkingHourPerDay
-          ? 'test-fail'
-          : 'test-pass'
+      (record) => (record.role.name === `manager` ? 'highlight-manager' : '')
     "
   >
     <template #headerCell="{ column }">
-      <template v-if="column.key === 'title'">
-        <span class="font-bold deep-purple"> Title </span>
+      <template v-if="column.key === 'username'">
+        <span class="font-bold deep-purple"> Username </span>
       </template>
-      <template v-if="column.key === 'description'">
-        <span class="font-bold deep-purple"> Description </span>
+      <template v-if="column.key === 'email'">
+        <span class="font-bold deep-purple"> Email </span>
       </template>
-      <template v-if="column.key === 'date'">
-        <span class="font-bold deep-purple"> Date </span>
+      <template v-if="column.key === 'role'">
+        <span class="font-bold deep-purple"> Role </span>
       </template>
-      <template v-if="column.key === 'timeWorkedInHours'">
-        <span class="font-bold deep-purple"> Time Worked </span>
+      <template v-if="column.key === 'preferredWorkingHourPerDay'">
+        <span class="font-bold deep-purple"> WorkHour Per Day </span>
       </template>
       <template v-if="column.key === 'actions'">
         <span class="font-bold deep-purple"> Actions </span>
@@ -31,21 +28,34 @@
     </template>
 
     <template #bodyCell="{ column, record, index }">
-      <template v-if="column.key === 'title'">
+      <template v-if="column.key === 'username'">
         <span class="font-medium">
-          {{ record.title }}
+          {{ record.username }}
         </span>
       </template>
-      <template v-else-if="column.key === 'description'">
+      <template v-else-if="column.key === 'email'">
         <span class="flex flex-col">
-          {{ record.description }}
+          {{ record.email }}
         </span>
       </template>
+      <template v-else-if="column.key === 'role'">
+        <span class="flex flex-col">
+          {{ record.role.name }}
+        </span>
+      </template>
+
       <template v-else-if="column.key === 'actions'">
-        <span class="flex flex-row items-center justify-between pr-5">
+        <span
+          class="flex flex-row items-center justify-between pr-5"
+          :class="{
+            disabled:
+              !['user', 'manager'].includes(record.role.name) ||
+              record.username === profile['username'],
+          }"
+        >
           <div
             class="flex items-center clickable-2"
-            @click="$emit('editRecord', record)"
+            @click="$emit('editUser', record)"
           >
             <edit-outlined />
             <span class="ml-2"> Edit</span>
@@ -57,9 +67,9 @@
             @click="
               () => {
                 actionIndex = index;
-                $emit('deleteRecord', {
+                $emit('deleteUser', {
                   id: record.id,
-                  title: record.title,
+                  username: record.username,
                   index,
                 });
               }
@@ -86,28 +96,29 @@ import "ant-design-vue/dist/antd.css";
 import { defineComponent, ref, watch } from "vue";
 
 import { mapState } from "pinia";
-import { useWorkLogStore } from "../../../stores/workLog";
+import { useUsersStore } from "../../../stores/users";
+import { useUserProfileStore } from "../../../stores/userProfile";
 
 const columns = [
   {
-    name: "Title",
-    dataIndex: "title",
-    key: "title",
+    name: "Username",
+    dataIndex: "username",
+    key: "username",
   },
   {
-    title: "Description",
-    dataIndex: "description",
-    key: "description",
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
   },
   {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
+    title: "Role",
+    dataIndex: "role",
+    key: "role",
   },
   {
-    title: "Time Worked",
-    key: "timeWorkedInHours",
-    dataIndex: "timeWorkedInHours",
+    title: "Preferred WorkHour/day",
+    key: "preferredWorkingHourPerDay",
+    dataIndex: "preferredWorkingHourPerDay",
   },
   {
     title: "Actions",
@@ -117,6 +128,8 @@ const columns = [
 ];
 
 export default defineComponent({
+  name: "UsersTable",
+
   props: {
     loading: Boolean,
     deleting: Boolean,
@@ -131,8 +144,11 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useWorkLogStore, {
-      data: "allWorkRecords",
+    ...mapState(useUsersStore, {
+      data: "allUsers",
+    }),
+    ...mapState(useUserProfileStore, {
+      profile: "userProfile",
     }),
   },
 
@@ -155,16 +171,7 @@ export default defineComponent({
 </script>
 
 <style>
-.test-fail,
-.test-pass {
-  @apply text-left break-words;
-}
-
-.test-fail {
-  @apply border border-red-300 bg-red-100;
-}
-
-.test-pass {
-  @apply border border-green-300 bg-green-100;
+.highlight-manager {
+  @apply bg-green-100;
 }
 </style>

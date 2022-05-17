@@ -1,5 +1,9 @@
 <template>
-  <base-modal :is-open="isOpen" title="Log New Task" @onClose="$emit('close')">
+  <base-modal
+    :is-open="isOpen"
+    :title="edit ? 'Edit Work Record' : 'Log New Task'"
+    @onClose="$emit('close')"
+  >
     <div class="w-full mx-auto mt-3 mb-10 rounded-md">
       <p class="font-light text-gray-500 description">
         Fill task work log Record as required below.

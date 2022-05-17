@@ -30,9 +30,9 @@ export default defineComponent({
           link: "/",
         },
         {
-          name: "Settings",
-          icon: "SettingOutlined",
-          link: "/settings",
+          name: "Profile",
+          icon: "UserOutlined",
+          link: "/profile",
         },
       ],
     };

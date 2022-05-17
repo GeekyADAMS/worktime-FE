@@ -34,8 +34,8 @@
 
         <a-space class="mt-6 mb-8" style="width: 100%">
           <a-button
-            class="flex flex-row items-center justify-center w-full px-6 py-3 text-white rounded-md clickable-2 bg-deep-purple space-between"
-            :class="{ disabled: isLoadingUser }"
+            class="flex flex-row items-center justify-center w-full h-12 px-6 text-white rounded-md clickable-2 bg-deep-purple space-between"
+            :class="{ disabled: isLoadingUser || !isFormComplete }"
             type="primary"
             :loading="isLoadingUser"
             @click="login"
@@ -55,24 +55,13 @@
             Create account</span
           >
         </div>
-
-        <div class="inline text-sm">
-          <br />
-          Forgot password?
-          <span
-            class="ml-2 font-medium text-orange-500 cursor-pointer"
-            @click="$router.push('/login')"
-          >
-            Reset password here</span
-          >
-        </div>
       </form>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref, reactive, watch } from "vue";
 import { mapActions } from "pinia";
 
 import AppLogo from "../components/icons/AppLogo.vue";
@@ -96,7 +85,7 @@ export default defineComponent({
       const data = await loginUser(this.userDetails);
 
       if (data) {
-        localStorage.setItem("access_token", data.jwt);
+        sessionStorage.setItem("access_token", data.jwt);
       } else {
         this.isLoadingUser = false;
         return;
@@ -112,6 +101,10 @@ export default defineComponent({
     },
   },
 
+  mounted() {
+    sessionStorage.clear();
+  },
+
   setup() {
     const userDetails = reactive({
       identifier: "",
@@ -120,15 +113,28 @@ export default defineComponent({
 
     const showPassword = ref(false);
     const isLoadingUser = ref(false);
+    const isFormComplete = ref(false);
 
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
     };
 
+    watch(
+      () => ({ ...userDetails }),
+      (newVal) => {
+        if (userDetails.identifier && userDetails.password) {
+          isFormComplete.value = true;
+        } else {
+          isFormComplete.value = false;
+        }
+      }
+    );
+
     return {
       userDetails,
       showPassword,
       isLoadingUser,
+      isFormComplete,
       togglePasswordVisibility,
     };
   },

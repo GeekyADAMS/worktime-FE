@@ -23,14 +23,14 @@
 <script lang="ts">
 // import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { HomeOutlined, SettingOutlined } from "@ant-design/icons-vue";
+import { HomeOutlined, UserOutlined } from "@ant-design/icons-vue";
 
 export default {
   name: "SidebarLinks",
 
   components: {
     HomeOutlined,
-    SettingOutlined,
+    UserOutlined,
   },
 
   props: {

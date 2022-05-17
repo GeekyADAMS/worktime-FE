@@ -57,9 +57,9 @@
           </div>
         </div>
 
-        <a-space class="mt-6 mb-2" style="width: 100%">
+        <a-space class="w-full mt-6 mb-4" style="width: 100%">
           <a-button
-            class="flex flex-row items-center justify-center w-full px-6 py-3 text-white rounded-md clickable-2 bg-deep-purple space-between"
+            class="flex flex-row items-center justify-center w-full h-12 px-6 text-white rounded-md clickable-2 bg-deep-purple space-between"
             :class="{ disabled: !isFormComplete || isRegistering }"
             type="primary"
             :loading="isRegistering"
@@ -78,13 +78,6 @@
             @click="$router.push('/login')"
           >
             Login here</span
-          >
-        </div>
-
-        <div class="inline text-sm">
-          Forgot password?
-          <span class="ml-2 font-medium text-orange-500 cursor-pointer">
-            Reset password here</span
           >
         </div>
       </form>
@@ -116,6 +109,10 @@ export default defineComponent({
       }
       this.isRegistering = false;
     },
+  },
+
+  mounted() {
+    sessionStorage.clear();
   },
 
   setup() {
