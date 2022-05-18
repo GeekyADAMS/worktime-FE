@@ -31,7 +31,15 @@ export const useWorkLogStore = defineStore({
     allWorkRecords: [],
   }),
   getters: {
-    doubleCount: (state) => state.workRecord.timeWorkedInHours * 2,
+    totalWorkTime: (state) => {
+      let total = 0;
+
+      for (let i = 0; i < state.allWorkRecords.length; i++) {
+        total += Number(state.allWorkRecords[i]["timeWorkedInHours"]);
+      }
+
+      return total;
+    },
   },
   actions: {
     setWorkRecord(record) {

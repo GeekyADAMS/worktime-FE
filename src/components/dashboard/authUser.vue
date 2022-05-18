@@ -30,7 +30,23 @@
     </div>
   </div>
 
-  <div class="flex flex-row justify-between w-full mt-16 mb-4">
+  <div class="flex flex-row items-center justify-between w-full mt-16 mb-4">
+    <div class="flex flex-row items-center h-full">
+      <a-button
+        class="flex flex-row items-center h-12 px-6 ml-auto text-white bg-green-500 border-none rounded-md outline-none clickable-2 space-between"
+        :class="{ disabled: !timeLogs.length || loadingRecord }"
+        type="primary"
+        :loading="false"
+        @click="exportRecord()"
+      >
+        <span class="m-3 font-bold">Export record</span>
+
+        <template #icon>
+          <ExportOutlined class="font-bold" />
+        </template>
+      </a-button>
+    </div>
+
     <div class="ml-auto">
       <date-range-filter
         :loading="loadingRecord"
@@ -49,6 +65,13 @@
     />
   </div>
 
+  <record-export-sheet
+    id="export-sheet"
+    :date-from="exportDateFrom"
+    :date-to="exportDateTo"
+    class="hidden"
+  />
+
   <task-entry-modal
     :is-open="showCreateModal"
     :edit="editRecord"
@@ -65,13 +88,18 @@
 import { defineComponent, ref, Ref } from "vue";
 import { mapState, mapActions } from "pinia";
 
-import { PlusOutlined, SettingOutlined } from "@ant-design/icons-vue";
+import {
+  PlusOutlined,
+  SettingOutlined,
+  ExportOutlined,
+} from "@ant-design/icons-vue";
 import { useToast } from "vue-toastification";
 
 import HourSettingModal from "../../components/util/modals/HoursSettingModal.vue";
 import TaskEntryModal from "../../components/util/modals/TaskEntryModal.vue";
 import TaskRecordTable from "../../components/util/tables/TaskRecordTable.vue";
 import DateRangeFilter from "../../components/util/filters/DateRangeFilter.vue";
+import RecordExportSheet from "../templates/RecordExportSheet.vue";
 
 import { deleteWorkLog } from "../../utils/httpsRequest/workLog";
 
@@ -82,11 +110,13 @@ export default defineComponent({
   name: "UserBoard",
   components: {
     HourSettingModal,
+    ExportOutlined,
     PlusOutlined,
     SettingOutlined,
     TaskEntryModal,
     TaskRecordTable,
     DateRangeFilter,
+    RecordExportSheet,
   },
 
   data() {
@@ -96,6 +126,9 @@ export default defineComponent({
   computed: {
     ...mapState(useUserProfileStore, {
       profile: "userProfile",
+    }),
+    ...mapState(useWorkLogStore, {
+      timeLogs: "allWorkRecords",
     }),
   },
 
@@ -161,6 +194,20 @@ export default defineComponent({
 
       this.deletingRecord = false;
     },
+
+    async exportRecord() {
+      const elHtml = document.getElementById("export-sheet").innerHTML;
+      const link = document.createElement("a");
+      const mimeType = "text/plain";
+
+      link.setAttribute("download", "sheet.html");
+      link.setAttribute(
+        "href",
+        "data:" + mimeType + ";charset=utf-8," + encodeURIComponent(elHtml)
+      );
+
+      link.click();
+    },
   },
 
   setup() {
@@ -172,12 +219,23 @@ export default defineComponent({
     const loadingRecord: Ref<boolean> = ref(false);
     const deletingRecord: Ref<boolean> = ref(false);
 
+    const exportDateFrom: Ref<string> = ref("");
+    const exportDateTo: Ref<string> = ref("");
+
+    const setExportDates = (filter) => {
+      exportDateFrom.value = filter.dateFrom;
+      exportDateTo.value = filter.dateTo;
+    };
+
     return {
       showCreateModal,
       showHourSettingModal,
+      exportDateFrom,
+      exportDateTo,
       editRecord,
       loadingRecord,
       deletingRecord,
+      setExportDates,
       toast,
     };
   },
