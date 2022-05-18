@@ -88,10 +88,13 @@ export default defineComponent({
     this.fetchingUsers = true;
     await this.getAllUsers();
     this.fetchingUsers = false;
+
+    this.getUserProfile(this.profile["id"]);
   },
 
   methods: {
     ...mapActions(useUsersStore, ["getAllUsers", "removeUser"]),
+    ...mapActions(useUserProfileStore, ["getUserProfile"]),
 
     async deleteUser(record) {
       if (

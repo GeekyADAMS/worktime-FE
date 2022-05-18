@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row w-screen h-screen overflow-y-auto bg-slate-100">
+  <div class="flex flex-row w-screen h-screen overflow-hidden bg-slate-100">
     <SidebarView />
 
     <div class="flex flex-col flex-grow w-auto h-full">

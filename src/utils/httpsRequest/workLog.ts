@@ -37,10 +37,18 @@ export const updateWorkLog = async (record, id: number) => {
   }
 };
 
-export const fetchUserWorkLogs = async (id) => {
+export const fetchUserWorkLogs = async (id, filter) => {
   try {
+    let dateFrom = "1800-01-01";
+    let dateTo = new Date().toISOString().split("T")[0];
+
+    if (filter) {
+      dateFrom = filter.dateFrom || "1800-01-01";
+      dateTo = filter.dateTo || new Date().toISOString().split("T")[0];
+    }
+
     const { data } = await api.get(
-      `/work-logs?populate=users_permissions_user&filters[users_permissions_user][id][$eq]=${id}`
+      `/work-logs?sort[0]=createdAt%3Adesc&populate=users_permissions_user&filters[users_permissions_user][id][$eq]=${id}&filters[$and][0][date][$gte]=${dateFrom}&filters[$and][1][date][$lte]=${dateTo}`
     );
 
     const record: any[] = [];
@@ -55,7 +63,7 @@ export const fetchUserWorkLogs = async (id) => {
 
     return { record, pageData };
   } catch (err: any) {
-    return { record: null, pageData: null };
+    return { record: [], pageData: null };
   }
 };
 

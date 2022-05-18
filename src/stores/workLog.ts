@@ -42,7 +42,7 @@ export const useWorkLogStore = defineStore({
       this.workRecord.timeWorkedInHours = record.timeWorkedInHours;
     },
     setAllWorkRecord(records: []) {
-      this.allWorkRecords = records || [];
+      this.allWorkRecords = records;
 
       // console.log("Heyyyyy", records);
     },
@@ -55,14 +55,15 @@ export const useWorkLogStore = defineStore({
         timeWorkedInHours: 0,
       };
     },
-    async getAllWorkRecords() {
+    async getAllWorkRecords(filter) {
       const profile = useUserProfileStore();
 
-      const { record } = await fetchUserWorkLogs(profile.userProfile["id"]);
+      const { record } = await fetchUserWorkLogs(
+        profile.userProfile["id"],
+        filter
+      );
 
-      if (record) {
-        this.setAllWorkRecord(record);
-      }
+      this.setAllWorkRecord(record);
     },
     removeWorkRecord(index) {
       this.allWorkRecords.splice(index, 1);

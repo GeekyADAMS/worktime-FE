@@ -1,6 +1,10 @@
 <template>
   <div class="w-full h-12 border-y">
-    <div class="flex flex-row w-full h-full">
+    <div class="flex flex-row items-center justify-between w-full h-full">
+      <div class="">
+        <h2 class="text-xl font-bold">Work Time Logs</h2>
+      </div>
+
       <div class="flex flex-row items-center h-full ml-auto">
         <a-button
           class="flex flex-row items-center h-full px-6 ml-auto text-white rounded-md clickable-2 bg-deep-purple space-between"
@@ -26,7 +30,14 @@
     </div>
   </div>
 
-  <h2 class="mt-10 mb-4 text-xl font-bold">Work Time Logs</h2>
+  <div class="flex flex-row justify-between w-full mt-16 mb-4">
+    <div class="ml-auto">
+      <date-range-filter
+        :loading="loadingRecord"
+        @filter="(filter) => fetchWorkRecords(filter)"
+      />
+    </div>
+  </div>
 
   <div class="flex w-full overflow-hidden rounded-md">
     <task-record-table
@@ -60,6 +71,7 @@ import { useToast } from "vue-toastification";
 import HourSettingModal from "../../components/util/modals/HoursSettingModal.vue";
 import TaskEntryModal from "../../components/util/modals/TaskEntryModal.vue";
 import TaskRecordTable from "../../components/util/tables/TaskRecordTable.vue";
+import DateRangeFilter from "../../components/util/filters/DateRangeFilter.vue";
 
 import { deleteWorkLog } from "../../utils/httpsRequest/workLog";
 
@@ -74,6 +86,7 @@ export default defineComponent({
     SettingOutlined,
     TaskEntryModal,
     TaskRecordTable,
+    DateRangeFilter,
   },
 
   data() {
@@ -87,13 +100,19 @@ export default defineComponent({
   },
 
   async mounted() {
-    this.loadingRecord = true;
-    await this.getAllWorkRecords();
-    this.loadingRecord = false;
+    this.fetchWorkRecords(null);
+    this.getUserProfile(this.profile["id"]);
   },
 
   methods: {
     ...mapActions(useWorkLogStore, ["getAllWorkRecords", "removeWorkRecord"]),
+    ...mapActions(useUserProfileStore, ["getUserProfile"]),
+
+    async fetchWorkRecords(filter) {
+      this.loadingRecord = true;
+      await this.getAllWorkRecords(filter);
+      this.loadingRecord = false;
+    },
 
     openEditMode(record) {
       this.editRecord = true;

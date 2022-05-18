@@ -12,7 +12,7 @@ export const registerUser = async (details) => {
     return false;
   } catch (err: any) {
     toast.error(`${err?.message?.toLowerCase()}`);
-    return !!err;
+    return true;
   }
 };
 

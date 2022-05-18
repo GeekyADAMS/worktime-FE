@@ -1,12 +1,13 @@
 import api from "../../services/api/axios";
-import { flattenNonDupObj } from "../helpers/tools";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
 
 export const fetchAllUsers = async () => {
   try {
-    const { data } = await api.get(`/users?populate=role`);
+    const { data } = await api.get(
+      `/users??sort[0]=createdAt%3Adesc&populate=role`
+    );
 
     return data;
   } catch (err: any) {

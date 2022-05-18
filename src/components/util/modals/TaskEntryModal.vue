@@ -11,12 +11,12 @@
 
       <form class="w-full mt-8 task-entry">
         <div class="mb-4">
-          <label>Task title</label>
+          <label>Task Title</label>
           <a-input v-model:value="workRecord.title" />
         </div>
 
         <div class="mb-4">
-          <label>Description</label>
+          <label>Description (Note)</label>
           <a-textarea
             v-model:value="workRecord.description"
             :rows="4"
@@ -26,8 +26,13 @@
         </div>
 
         <div class="mb-6">
-          <label>Date</label>
-          <input v-model="workRecord.date" type="date" />
+          <label>Pick Date</label>
+          <input
+            v-model="workRecord.date"
+            type="date"
+            :max="today"
+            onkeydown="return false"
+          />
         </div>
 
         <div class="w-full mb-10">
@@ -94,31 +99,40 @@ export default defineComponent({
     ]),
 
     async addRecord() {
+      this.isUpdatingWorkLog = true;
+
       const isErr = await this.addWorkRecord();
 
       if (!isErr) {
         await this.getAllWorkRecords();
         this.$emit("close");
-        return;
       }
+
+      this.isUpdatingWorkLog = false;
     },
 
     async editRecord(id) {
+      this.isUpdatingWorkLog = true;
+
       const isErr = await this.editWorkRecord(id);
 
       if (!isErr) {
         await this.getAllWorkRecords();
         this.$emit("close");
-        return;
       }
+
+      this.isUpdatingWorkLog = false;
     },
   },
 
   setup() {
     const isUpdatingWorkLog: Ref<boolean> = ref(false);
 
+    const today = new Date().toISOString().split("T")[0];
+
     return {
       isUpdatingWorkLog,
+      today,
     };
   },
 });
