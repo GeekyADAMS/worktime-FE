@@ -142,6 +142,7 @@ export default defineComponent({
     ...mapActions(useUserProfileStore, ["getUserProfile"]),
 
     async fetchWorkRecords(filter) {
+      this.setExportDates(filter);
       this.loadingRecord = true;
       await this.getAllWorkRecords(filter);
       this.loadingRecord = false;
@@ -223,8 +224,13 @@ export default defineComponent({
     const exportDateTo: Ref<string> = ref("");
 
     const setExportDates = (filter) => {
-      exportDateFrom.value = filter.dateFrom;
-      exportDateTo.value = filter.dateTo;
+      if (filter) {
+        exportDateFrom.value = filter.dateFrom;
+        exportDateTo.value = filter.dateTo;
+      } else {
+        exportDateFrom.value = "";
+        exportDateTo.value = "";
+      }
     };
 
     return {

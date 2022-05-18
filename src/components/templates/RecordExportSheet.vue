@@ -9,7 +9,7 @@
       }}
     </p>
 
-    <p>
+    <p v-show="dateTo">
       <b>Date to: </b>
       {{ dateTo || "unset" }}
     </p>

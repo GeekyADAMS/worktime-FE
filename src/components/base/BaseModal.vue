@@ -53,9 +53,10 @@
             <!--Title-->
             <div class="flex items-start justify-between pt-6">
               <p
+                id="modal-title"
                 class="text-xl font-bold leading-tight tracking-tight matte opacity-80"
               >
-                {{ title ? title : "" }}
+                {{ title || "" }}
               </p>
             </div>
 
