@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "work_logs",
+  "info": {
+    "singularName": "work-log",
+    "pluralName": "work-logs",
+    "displayName": "Work Log",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "timeWorkedInHours": {
+      "type": "integer",
+      "required": true,
+      "max": 24,
+      "min": 1
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
